@@ -1,20 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lista de Tareas</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <form>
-        <label>Tarea:</label>
-        <input id="tarea" type="text">
-        <button onclick="" type="submit">Agregar</button>
-    </form>
-    <button onclick="" type="button">Eliminar todas las tareas</button>
+  <div class="contenedor">
+    <h1>📝 Lista de Tareas</h1>
 
+    <input type="text" id="nuevaTarea" placeholder="Escribe una tarea...">
+    <button id="botonAgregar">Agregar</button>
 
-    <script src="script.js"></script>
+    <div class="filtros">
+      <button data-filtro="todas">Todas</button>
+      <button data-filtro="pendientes">Pendientes</button>
+      <button data-filtro="completadas">Completadas</button>
+    </div>
+
+    <ul id="listaTareas"></ul>
+
+    <button id="eliminarCompletadas">Eliminar Completadas</button>
+
+    <p id="infoRapida"></p>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
