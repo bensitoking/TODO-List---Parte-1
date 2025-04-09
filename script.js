@@ -3,21 +3,37 @@ const botonAgregar = document.getElementById("botonAgregar");
 const lista = document.getElementById("listaTareas");
 const botonEliminarCompletadas = document.getElementById("eliminarCompletadas");
 const infoRapida = document.getElementById("infoRapida");
+const botonesFiltro = document.querySelectorAll(".filtros button");
 
 let tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+let filtroActual = "todas";
 
-function mostrar() {
+const mostrar = () => {
   lista.innerHTML = "";
 
-  tareas.forEach((tarea, i) => {
+  let tareasFiltradas = [];
+
+  switch (filtroActual) {
+    case "pendientes":
+      tareasFiltradas = tareas.filter(t => !t.completada);
+      break;
+    case "completadas":
+      tareasFiltradas = tareas.filter(t => t.completada);
+      break;
+    default:
+      tareasFiltradas = [...tareas];
+  }
+
+  tareasFiltradas.forEach((tarea, i) => {
+    const indexReal = tareas.indexOf(tarea); 
     const item = document.createElement("li");
     item.className = tarea.completada ? "tarea-completada" : "";
 
     item.innerHTML = `
       <span>${tarea.texto}</span>
       <div>
-        <button onclick="completar(${i})">✔</button>
-        <button onclick="borrar(${i})">🗑</button>
+        <button onclick="completar(${indexReal})">✔</button>
+        <button onclick="borrar(${indexReal})">🗑</button>
       </div>
     `;
 
@@ -26,7 +42,7 @@ function mostrar() {
 
   mostrarRapida();
   guardar();
-}
+};
 
 botonAgregar.addEventListener("click", () => {
   if (input.value.trim() === "") return;
@@ -42,7 +58,7 @@ botonAgregar.addEventListener("click", () => {
   mostrar();
 });
 
-function completar(i) {
+const completar = i => {
   const tarea = tareas[i];
 
   if (!tarea.completada) {
@@ -54,19 +70,19 @@ function completar(i) {
   }
 
   mostrar();
-}
+};
 
-function borrar(i) {
+const borrar = i => {
   tareas.splice(i, 1);
   mostrar();
-}
+};
 
 botonEliminarCompletadas.addEventListener("click", () => {
   tareas = tareas.filter(t => !t.completada);
   mostrar();
 });
 
-function mostrarRapida() {
+const mostrarRapida = () => {
   const completadas = tareas.filter(t => t.completada && t.completadaEn);
 
   if (completadas.length === 0) {
@@ -74,18 +90,25 @@ function mostrarRapida() {
     return;
   }
 
-  const conTiempo = completadas.map(t => ({
-    texto: t.texto,
-    tiempo: t.completadaEn - t.creada
+  const conTiempo = completadas.map(({ texto, creada, completadaEn }) => ({
+    texto,
+    tiempo: completadaEn - creada
   }));
 
-  const masRapida = conTiempo.reduce((a, b) => a.tiempo < b.tiempo ? a : b);
+  const masRapida = conTiempo.reduce((a, b) => (a.tiempo < b.tiempo ? a : b));
 
   infoRapida.textContent = `⏱ Tarea más rápida: "${masRapida.texto}" en ${Math.round(masRapida.tiempo / 1000)} segundos.`;
-}
+};
 
-function guardar() {
+const guardar = () => {
   localStorage.setItem("tareas", JSON.stringify(tareas));
-}
+};
+
+botonesFiltro.forEach(boton => {
+  boton.addEventListener("click", () => {
+    filtroActual = boton.getAttribute("data-filtro");
+    mostrar();
+  });
+});
 
 mostrar();
